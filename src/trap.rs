@@ -1,4 +1,4 @@
-pub fn handle_irq(_irq_num: usize, _from_user: bool) {
+pub fn handle_irq(_tf: &mut axhal::arch::TrapFrame, _irq_num: usize, _from_user: bool) {
     #[cfg(feature = "irq")]
     {
         let guard = kernel_guard::NoPreempt::new();
@@ -12,7 +12,10 @@ pub fn handle_irq(_irq_num: usize, _from_user: bool) {
         drop(guard); // rescheduling may occur when preemption is re-enabled.
 
         #[cfg(feature = "preempt")]
-        axtask::current_check_preempt_pending();
+        {
+            let taskctx: &mut axtask::TaskContext = unsafe { core::mem::transmute(_tf) };
+            axtask::current_check_preempt_pending(taskctx);
+        }
     }
 }
 

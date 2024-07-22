@@ -47,7 +47,7 @@ pub fn riscv_trap_handler(tf: &mut TrapFrame, from_user: bool) {
     }
     match scause.cause() {
         Trap::Exception(E::Breakpoint) => handle_breakpoint(&mut tf.sepc),
-        Trap::Interrupt(_) => handle_irq(scause.bits(), from_user),
+        Trap::Interrupt(_) => handle_irq(tf, scause.bits(), from_user),
 
         #[cfg(feature = "monolithic")]
         Trap::Exception(E::UserEnvCall) => {
