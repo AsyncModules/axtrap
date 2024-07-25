@@ -13,6 +13,7 @@ default = []
 monolithic = ["dep:linux_syscall_api"]
 irq = []
 preempt = ["axtask/preempt", "percpu/preempt", "kernel_guard/preempt"]
+async = []
 
 [dependencies]
 axlog = { git = "https://github.com/Starry-OS/axlog.git" }

@@ -12,8 +12,14 @@ use crate::trap::*;
 use linux_syscall_api::trap::MappingFlags;
 
 include_trap_asm_marcos!();
+#[cfg(not(feature = "async"))]
 core::arch::global_asm!(
     include_str!("trap.S"),
+    trapframe_size = const core::mem::size_of::<TrapFrame>(),
+);
+#[cfg(feature = "async")]
+core::arch::global_asm!(
+    include_str!("async_trap.S"),
     trapframe_size = const core::mem::size_of::<TrapFrame>(),
 );
 
