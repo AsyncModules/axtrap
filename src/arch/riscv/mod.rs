@@ -42,7 +42,7 @@ pub fn riscv_trap_handler(tf: &mut TrapFrame, from_user: bool) {
     let scause = scause::read();
     // Read the stval before enable_irqs
     // Otherwise, the stval may be changed after the time interrupt is handled
-    let stval = riscv::register::stval::read();
+    let _stval = riscv::register::stval::read();
 
     #[cfg(feature = "monolithic")]
     linux_syscall_api::trap::record_trap(scause.code());
@@ -75,11 +75,11 @@ pub fn riscv_trap_handler(tf: &mut TrapFrame, from_user: bool) {
             if !from_user {
                 unimplemented!(
                     "I page fault from kernel, addr: {:X}, sepc: {:X}",
-                    stval,
+                    _stval,
                     tf.sepc
                 );
             }
-            handle_page_fault(stval.into(), MappingFlags::USER | MappingFlags::EXECUTE);
+            handle_page_fault(_stval.into(), MappingFlags::USER | MappingFlags::EXECUTE);
         }
 
         #[cfg(feature = "monolithic")]
@@ -87,11 +87,11 @@ pub fn riscv_trap_handler(tf: &mut TrapFrame, from_user: bool) {
             if !from_user {
                 unimplemented!(
                     "L page fault from kernel, addr: {:X}, sepc: {:X}",
-                    stval,
+                    _stval,
                     tf.sepc
                 );
             }
-            handle_page_fault(stval.into(), MappingFlags::USER | MappingFlags::READ);
+            handle_page_fault(_stval.into(), MappingFlags::USER | MappingFlags::READ);
         }
 
         #[cfg(feature = "monolithic")]
@@ -99,11 +99,11 @@ pub fn riscv_trap_handler(tf: &mut TrapFrame, from_user: bool) {
             if !from_user {
                 unimplemented!(
                     "S page fault from kernel, addr: {:X}, sepc: {:X}",
-                    stval,
+                    _stval,
                     tf.sepc
                 );
             }
-            handle_page_fault(stval.into(), MappingFlags::USER | MappingFlags::WRITE);
+            handle_page_fault(_stval.into(), MappingFlags::USER | MappingFlags::WRITE);
         }
 
         _ => {
